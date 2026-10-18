@@ -190,7 +190,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingrese su clave (ej: 123)"
+                placeholder="Ingrese su contraseña"
                 className={`w-full pl-12 pr-12 rounded-2xl bg-slate-50 border border-slate-200 font-semibold text-slate-900 focus:border-[#F2D9DC] focus:ring-2 focus:ring-[#F2D9DC]/50 focus:outline-none transition-all ${inputPaddingClass}`}
               />
               <button
@@ -239,39 +239,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <p className="text-center text-xs text-slate-400 font-medium mt-2">
             Los vecinos no necesitan contraseña; solo escriben su nombre para consultar el estatus.
           </p>
-        </div>
-
-        {/* Atajos Rápidos de Prueba para Mamá / Equipo */}
-        <div className="pt-3 border-t border-slate-100 space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block text-center">
-            Atajos de Prueba (1 toque):
-          </span>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('cobrador', '123')}
-              className="p-2.5 rounded-2xl border border-[#DBEAFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-blue-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              👤 Cobrador
-              <span className="block text-2xs text-blue-500 font-mono mt-0.5">clave: 123</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('verificador', '123')}
-              className="p-2.5 rounded-2xl border border-[#E0E7FF] bg-[#EEF2FF] hover:bg-[#E0E7FF] text-indigo-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              🏦 Verificador
-              <span className="block text-2xs text-indigo-500 font-mono mt-0.5">clave: 123</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin', '123')}
-              className="p-2.5 rounded-2xl border border-[#FDE68A] bg-[#FFFBEB] hover:bg-[#FEF3C7] text-amber-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              👑 Administrador
-              <span className="block text-2xs text-amber-600 font-mono mt-0.5">clave: 123</span>
-            </button>
-          </div>
         </div>
 
       </div>

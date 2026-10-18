@@ -1,9 +1,9 @@
 import type { GasRecord, StatusDetail, RecordStatusLevel, UserRole, UserSession } from '../types/gas.ts';
 
 export const DEFAULT_USERS: Record<string, { pass: string; role: UserRole; name: string }> = {
-  admin: { pass: '123', role: 'master', name: 'Administrador Master' },
-  cobrador: { pass: '123', role: 'cobrador', name: 'Atención / Cobrador' },
-  verificador: { pass: '123', role: 'verificador', name: 'Verificador / Banco' },
+  admin: { pass: 'master123', role: 'master', name: 'Administrador Master' },
+  cobrador: { pass: 'cobrad123', role: 'cobrador', name: 'Atención / Cobrador' },
+  verificador: { pass: 'verifi123', role: 'verificador', name: 'Verificador / Banco' },
 };
 
 export function authenticateUser(userInput: string, passInput: string): { success: boolean; session?: UserSession; error?: string } {
@@ -16,7 +16,7 @@ export function authenticateUser(userInput: string, passInput: string): { succes
 
   const userFound = DEFAULT_USERS[cleanUser];
   if (!userFound || userFound.pass !== cleanPass) {
-    return { success: false, error: 'Usuario o contraseña incorrectos. (Prueba con cobrador / 123 o admin / 123)' };
+    return { success: false, error: 'Usuario o contraseña incorrectos.' };
   }
 
   return {
