@@ -4,7 +4,7 @@ export const DEFAULT_USERS: Record<string, { pass: string; role: UserRole; name:
   admin: { pass: 'master123', role: 'master', name: 'Administrador Master' },
   cobrador: { pass: 'cobrad123', role: 'cobrador', name: 'Atención / Cobrador' },
   verificador: { pass: 'verifi123', role: 'verificador', name: 'Verificador / Banco' },
-  sf10: { pass: '10751.', role: 'mama', name: 'Mamá (Cobrador)' },
+  sf10: { pass: '10751.', role: 'mama', name: 'sf10 Cobrador' },
 };
 
 export function authenticateUser(userInput: string, passInput: string): { success: boolean; session?: UserSession; error?: string } {

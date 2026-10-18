@@ -70,10 +70,10 @@ export const PrintSheetView: React.FC<PrintSheetViewProps> = ({ records, fontSiz
           </div>
           <div>
             <h3 className="text-xl font-black text-amber-950 font-['Outfit']">
-              Fase de Respaldo en Paralelo: Lista para el Cuaderno
+              Fase de Respaldo en Paralelo: Hoja de Impresión
             </h3>
             <p className="text-amber-900 text-sm md:text-base font-medium">
-              "Durante las primeras jornadas, podemos seguir teniendo la hoja en papel mientras nos acostumbramos a la aplicación para que no haya dudas."
+              "Puedes imprimir o guardar en PDF esta lista oficial para tener un respaldo físico de la jornada."
             </p>
           </div>
         </div>

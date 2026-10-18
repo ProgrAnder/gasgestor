@@ -62,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-slate-400 text-xs md:text-sm font-medium">
-                Organización de Bombonas • Claro, rápido y sin cuaderno
+                Organización de Bombonas • Claro, rápido y digital
               </p>
             </div>
           </div>
@@ -227,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Respaldo en Cuaderno / Imprimir */}
+            {/* Hoja de Impresión */}
             <button
               type="button"
               onClick={() => onSelectRole('master')}
@@ -243,26 +243,7 @@ export const Header: React.FC<HeaderProps> = ({
               }
             >
               <Printer className="w-4 h-4 text-current" />
-              <span>Lista para Cuaderno</span>
-            </button>
-
-            {/* Explicación para Mamá */}
-            <button
-              type="button"
-              onClick={() => onSelectRole('guia_mama')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-2xl font-bold text-xs md:text-sm whitespace-nowrap transition-all cursor-pointer border ${
-                currentRole === 'guia_mama'
-                  ? 'shadow-sm ring-2'
-                  : 'hover:bg-slate-50 border-transparent'
-              }`}
-              style={
-                currentRole === 'guia_mama'
-                  ? { background: '#D9F2D8', color: '#15803D', borderColor: '#86EFAC' }
-                  : { color: '#64748B', borderColor: 'transparent' }
-              }
-            >
-              <HeartHandshake className="w-4 h-4 text-current" />
-              <span>💡 Guía para Mamá</span>
+              <span>Hoja de Impresión</span>
             </button>
           </nav>
         )}

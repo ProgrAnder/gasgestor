@@ -426,15 +426,7 @@ export default function App() {
           <p className="text-slate-400">
             Sesión iniciada como <strong className="text-slate-700">{session.name}</strong> ({session.role}).
           </p>
-          <div className="pt-2 flex justify-center gap-4">
-            <button
-              type="button"
-              onClick={() => setCurrentRole('guia_mama')}
-              className="text-amber-500 hover:text-amber-600 font-bold underline cursor-pointer"
-            >
-              Ver Guión y Explicación para Mamá
-            </button>
-            <span className="text-slate-200">•</span>
+          <div className="pt-2 flex justify-center">
             <button
               type="button"
               onClick={handleLogout}
