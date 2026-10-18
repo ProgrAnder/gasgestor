@@ -243,10 +243,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
       </div>
 
-      <p className="text-slate-400 text-xs font-medium mt-6 text-center">
-        GasGestor • Desarrollado para organizar las jornadas comunales de gas sin cuaderno ni enredos.
-      </p>
-
     </div>
   );
 };
