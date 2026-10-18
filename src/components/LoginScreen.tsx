@@ -225,7 +225,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           <div className="flex-grow border-t border-slate-100"></div>
         </div>
 
-        {/* Botón de Acceso Comunitario SIN Contraseña */}
+        {/* Botón de Acceso a Vecinos */}
         <div>
           <button
             type="button"
@@ -234,7 +234,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             style={{ background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)' }}
           >
             <Users className="w-6 h-6" />
-            <span>Acceso Vecinos / Comunidad (Sin Clave)</span>
+            <span>Acceso a Vecinos</span>
           </button>
           <p className="text-center text-xs text-slate-400 font-medium mt-2">
             Los vecinos no necesitan contraseña; solo escriben su nombre para consultar el estatus.
