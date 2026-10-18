@@ -14,6 +14,9 @@ import {
   ChevronUp,
   Receipt,
   Users,
+  Eye,
+  EyeOff,
+  Flame,
 } from 'lucide-react';
 
 interface MamaSimpleCollectorProps {
@@ -86,11 +89,26 @@ export const MamaSimpleCollector: React.FC<MamaSimpleCollectorProps> = ({
     return inName || inNick || inRef;
   });
 
-  // Totales sencillos
+  const [showTotalMonto, setShowTotalMonto] = useState(false);
+
+  // Totales y desglose por válvulas
   const totalBombonas = records.reduce(
     (acc, r) => acc + r.bombonas.reduce((s, b) => s + b.qty, 0),
     0
   );
+
+  const valveCounts = records.reduce(
+    (acc, r) => {
+      r.bombonas.forEach((b) => {
+        if (b.valve === 'Rosca') acc.rosca += b.qty;
+        else if (b.valve === 'Clip-on') acc.clipon += b.qty;
+        else if (b.valve === 'AutoGas') acc.autogas += b.qty;
+      });
+      return acc;
+    },
+    { rosca: 0, clipon: 0, autogas: 0 }
+  );
+
   const totalMonto = records.reduce((acc, r) => acc + (r.monto || 0), 0);
 
   const textSizeClass =
@@ -100,38 +118,79 @@ export const MamaSimpleCollector: React.FC<MamaSimpleCollectorProps> = ({
     <div className="space-y-5 max-w-4xl mx-auto">
       
       {/* Banner Superior Amigable */}
-      <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white p-5 md:p-6 rounded-3xl shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 text-center sm:text-left">
-          <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-            <Heart className="w-7 h-7 text-white fill-white" />
+      <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white p-5 md:p-6 rounded-3xl shadow-md space-y-4">
+        
+        {/* Fila del Título y Total Principal */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-center sm:text-left">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+              <Flame className="w-7 h-7 text-white fill-white" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-black">Libreta de Cobro sf10</h2>
+              <p className="text-rose-100 text-xs md:text-sm font-medium">
+                Control de entregas y conteo de bombonas
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl md:text-2xl font-black">Mi Libreta de Bombonas</h2>
-            <p className="text-rose-100 text-xs md:text-sm font-medium">
-              Anota tus vecinos y bombonas de forma fácil y sin enredos
-            </p>
+
+          {/* Contador General de Personas y Bombonas */}
+          <div className="flex items-center gap-3 bg-white/15 backdrop-blur-sm px-4 py-2.5 rounded-2xl border border-white/20 text-center">
+            <div>
+              <span className="text-2xs text-rose-100 block font-bold uppercase">Personas</span>
+              <strong className="text-xl font-black">{records.length}</strong>
+            </div>
+            <div className="w-px bg-white/30 my-0.5"></div>
+            <div>
+              <span className="text-2xs text-rose-100 block font-bold uppercase">Total Bombonas</span>
+              <strong className="text-xl font-black text-amber-200">{totalBombonas}</strong>
+            </div>
           </div>
         </div>
 
-        {/* Resumen Rápido */}
-        <div className="flex gap-2 sm:gap-3 bg-white/15 backdrop-blur-sm px-4 py-2.5 rounded-2xl border border-white/20 text-center">
-          <div>
-            <span className="text-2xs text-rose-100 block font-bold uppercase">Personas</span>
-            <strong className="text-lg md:text-xl font-black">{records.length}</strong>
+        {/* Desglose por Válvulas y Total Bs Oculto */}
+        <div className="pt-3 border-t border-white/20 flex flex-wrap items-center justify-between gap-3 text-xs">
+          
+          {/* Pills de Válvulas */}
+          <div className="flex items-center flex-wrap gap-2">
+            <div className="bg-white/20 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-white/25 flex items-center gap-1.5">
+              <span className="font-medium text-rose-100">Rosca:</span>
+              <strong className="text-sm font-black text-white">{valveCounts.rosca}</strong>
+            </div>
+
+            <div className="bg-white/20 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-white/25 flex items-center gap-1.5">
+              <span className="font-medium text-rose-100">Clip-on:</span>
+              <strong className="text-sm font-black text-white">{valveCounts.clipon}</strong>
+            </div>
+
+            <div className="bg-white/20 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-white/25 flex items-center gap-1.5">
+              <span className="font-medium text-rose-100">AutoGas:</span>
+              <strong className="text-sm font-black text-white">{valveCounts.autogas}</strong>
+            </div>
           </div>
-          <div className="w-px bg-white/30 my-0.5"></div>
-          <div>
-            <span className="text-2xs text-rose-100 block font-bold uppercase">Bombonas</span>
-            <strong className="text-lg md:text-xl font-black">{totalBombonas}</strong>
+
+          {/* Total Bs con opción Oculta / Revelar */}
+          <div className="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-xl border border-white/15">
+            <span className="text-2xs font-bold text-rose-200">Total Bs:</span>
+            {showTotalMonto ? (
+              <strong className="text-sm font-black text-emerald-300">
+                Bs. {totalMonto.toLocaleString('es-VE', { minimumFractionDigits: 0 })}
+              </strong>
+            ) : (
+              <span className="font-mono text-sm tracking-widest text-slate-300 select-none">••••••••</span>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowTotalMonto(!showTotalMonto)}
+              className="text-white/80 hover:text-white cursor-pointer ml-1"
+              title={showTotalMonto ? 'Ocultar Total Bs' : 'Mostrar Total Bs'}
+            >
+              {showTotalMonto ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
-          <div className="w-px bg-white/30 my-0.5"></div>
-          <div>
-            <span className="text-2xs text-rose-100 block font-bold uppercase">Total Bs.</span>
-            <strong className="text-lg md:text-xl font-black">
-              {totalMonto.toLocaleString('es-VE', { minimumFractionDigits: 0 })}
-            </strong>
-          </div>
+
         </div>
+
       </div>
 
       {/* Botón para Abrir Formulario */}
