@@ -15,6 +15,7 @@ import { CollectorView } from './components/CollectorView.tsx';
 import { VerifierView } from './components/VerifierView.tsx';
 import { PrintSheetView } from './components/PrintSheetView.tsx';
 import { MamaGuideView } from './components/MamaGuideView.tsx';
+import { MamaSimpleCollector } from './components/MamaSimpleCollector.tsx';
 import { CheckCircle2, AlertCircle, Info, HeartHandshake, Wifi, WifiOff } from 'lucide-react';
 
 export default function App() {
@@ -66,16 +67,20 @@ export default function App() {
     return SEED_RECORDS;
   });
 
+  // Nombre de la colección según el rol (colección aislada 'gas_records_mama' para mamá)
+  const isMama = session?.role === 'mama';
+  const collectionName = isMama ? 'gas_records_mama' : 'gas_records';
+
   // Suscribirse a Firestore en tiempo real (lee localmente de inmediato y sincroniza en segundo plano)
   useEffect(() => {
     const unsubscribe = subscribeToGasRecords((cloudRecords) => {
       if (cloudRecords && cloudRecords.length > 0) {
         setRecords(cloudRecords);
       }
-    });
+    }, collectionName);
 
     return () => unsubscribe();
-  }, []);
+  }, [collectionName]);
 
   // Rol activo para visualización
   const [currentRole, setCurrentRole] = useState<UserRole>('comunidad');
@@ -94,11 +99,11 @@ export default function App() {
   // Guardar en localStorage de respaldo
   useEffect(() => {
     try {
-      localStorage.setItem('gasgestor_records', JSON.stringify(records));
+      localStorage.setItem(`gasgestor_records_${collectionName}`, JSON.stringify(records));
     } catch (e) {
       console.error('Error saving records:', e);
     }
-  }, [records]);
+  }, [records, collectionName]);
 
   useEffect(() => {
     try {
@@ -124,7 +129,9 @@ export default function App() {
     }
 
     // Configurar la vista correspondiente según el rol
-    if (newSession.role === 'cobrador') {
+    if (newSession.role === 'mama') {
+      setCurrentRole('mama');
+    } else if (newSession.role === 'cobrador') {
       setCurrentRole('cobrador');
     } else if (newSession.role === 'verificador') {
       setCurrentRole('verificador');
@@ -134,7 +141,7 @@ export default function App() {
       setCurrentRole('comunidad');
     }
 
-    showToast(`Bienvenido/a, ${newSession.name}.`, 'success');
+    showToast(`Bienvenida, ${newSession.name}.`, 'success');
   };
 
   const handleLogout = () => {
@@ -156,7 +163,7 @@ export default function App() {
     setRecords((prev) => [record, ...prev]);
     showToast(`Registro guardado para ${record.nombre}.`, 'success');
     try {
-      await saveGasRecordToCloud(record);
+      await saveGasRecordToCloud(record, collectionName);
     } catch (e) {
       console.warn('Guardado en cache offline (se sincronizará al conectar):', e);
     }
@@ -175,7 +182,7 @@ export default function App() {
       'info'
     );
     try {
-      await saveGasRecordToCloud(updated);
+      await saveGasRecordToCloud(updated, collectionName);
     } catch (e) {
       console.warn('Actualizado en cache offline:', e);
     }
@@ -194,7 +201,7 @@ export default function App() {
       'info'
     );
     try {
-      await saveGasRecordToCloud(updated);
+      await saveGasRecordToCloud(updated, collectionName);
     } catch (e) {
       console.warn('Actualizado en cache offline:', e);
     }
@@ -213,7 +220,7 @@ export default function App() {
       'info'
     );
     try {
-      await saveGasRecordToCloud(updated);
+      await saveGasRecordToCloud(updated, collectionName);
     } catch (e) {
       console.warn('Actualizado en cache offline:', e);
     }
@@ -236,7 +243,7 @@ export default function App() {
       tieneInconveniente ? 'error' : 'success'
     );
     try {
-      await saveGasRecordToCloud(updated);
+      await saveGasRecordToCloud(updated, collectionName);
     } catch (e) {
       console.warn('Actualizado en cache offline:', e);
     }
@@ -246,7 +253,7 @@ export default function App() {
     setRecords((prev) => prev.filter((r) => r.id !== id));
     showToast('Registro eliminado.', 'info');
     try {
-      await deleteGasRecordFromCloud(id);
+      await deleteGasRecordFromCloud(id, collectionName);
     } catch (e) {
       console.warn('Eliminado en cache offline:', e);
     }
@@ -257,7 +264,7 @@ export default function App() {
       setRecords(SEED_RECORDS);
       showToast('Se han restablecido los 5 ejemplos ficticios de prueba.', 'success');
       try {
-        await resetGasRecordsInCloud();
+        await resetGasRecordsInCloud(collectionName);
       } catch (e) {
         console.warn('Reset aplicado en cache local:', e);
       }
@@ -343,13 +350,23 @@ export default function App() {
           </span>
         </div>
 
-        {/* Banner Estadístico Rápido */}
-        {currentRole !== 'guia_mama' && (
+        {/* Banner Estadístico Rápido (Oculto para mamá para no abrumar) */}
+        {!isMama && currentRole !== 'guia_mama' && (
           <StatsCards records={records} fontSize={fontSize} />
         )}
 
-        {/* Vistas según Rol Activo */}
-        {currentRole === 'comunidad' && (
+        {/* Vista Ultra Simplificada para Mamá */}
+        {isMama && (
+          <MamaSimpleCollector
+            records={records}
+            onAddRecord={handleAddRecord}
+            onDeleteRecord={handleDeleteRecord}
+            fontSize={fontSize}
+          />
+        )}
+
+        {/* Vistas según Rol Activo (cuando no es Mamá) */}
+        {!isMama && currentRole === 'comunidad' && (
           <CommunityView
             records={records}
             onAddRecord={handleAddRecord}

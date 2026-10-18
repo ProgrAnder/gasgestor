@@ -42,7 +42,7 @@ export interface StatusDetail {
   isApproved: boolean;
 }
 
-export type UserRole = 'comunidad' | 'cobrador' | 'verificador' | 'master' | 'guia_mama';
+export type UserRole = 'comunidad' | 'cobrador' | 'verificador' | 'master' | 'guia_mama' | 'mama';
 
 export interface UserSession {
   user: string;
