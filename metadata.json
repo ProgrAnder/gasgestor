@@ -1,0 +1,6 @@
+{
+  "name": "GasGestor - Control Comunal de Bombonas",
+  "description": "Sistema comunal sencillo, táctil y accesible para organizar el cobro, conciliación bancaria y entrega de bombonas de gas sin cuaderno ni enredos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

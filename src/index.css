@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+/* ===================================================
+   Google Fonts — Noto Serif Display + Plus Jakarta Sans
+   =================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+/* ===================================================
+   Friendly Design System — Variables CSS
+   =================================================== */
+:root {
+  /* Color Tokens */
+  --color-primary:   #F2D9DC; /* rosa pastel */
+  --color-secondary: #D9F2D8; /* verde pastel */
+  --color-surface:   #FFFFFF;
+  --color-text:      #111827;
+  --color-success:   #16A34A;
+  --color-warning:   #D97706;
+  --color-danger:    #DC2626;
+
+  /* Extended palette pastel */
+  --color-blue-soft:   #DBEAFE;
+  --color-indigo-soft: #E0E7FF;
+  --color-rose-soft:   #FFE4E6;
+  --color-amber-soft:  #FEF3C7;
+  --color-green-soft:  #DCFCE7;
+
+  /* Shadows */
+  --shadow-card:  0 4px 24px 0 rgba(0,0,0,0.07);
+  --shadow-login: 0 12px 48px 0 rgba(0,0,0,0.10);
+
+  /* Typography */
+  --font-heading: 'Noto Serif Display', Georgia, serif;
+  --font-body:    'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* ===================================================
+   Base — Fuentes y Reset Suave
+   =================================================== */
+@layer base {
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background-color: #FDF8F8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
+
+/* ===================================================
+   Animaciones — Friendly Motion
+   =================================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bounceShort {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-short {
+  animation: bounceShort 0.4s ease-in-out;
+}
+
+/* ===================================================
+   @media print — Sin cambios respecto al original
+   =================================================== */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+  }
+
+  header, nav, footer, button, .print\:hidden {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border: 1px solid #333 !important;
+    padding: 6px !important;
+  }
+}
