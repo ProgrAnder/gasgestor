@@ -149,129 +149,20 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
           </div>
         )}
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Campo Usuario */}
-          <div>
-            <label
-              htmlFor="login-username"
-              className={`block font-bold text-slate-700 mb-1.5 ${textSizeClass}`}
-            >
-              Usuario:
-            </label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                id="login-username"
-                type="text"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ej: admin, cobrador, verificador"
-                className={`w-full pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 font-semibold text-slate-900 focus:border-[#F2D9DC] focus:ring-2 focus:ring-[#F2D9DC]/50 focus:outline-none transition-all ${inputPaddingClass}`}
-              />
-            </div>
-          </div>
-
-          {/* Campo Contraseña */}
-          <div>
-            <label
-              htmlFor="login-password"
-              className={`block font-bold text-slate-700 mb-1.5 ${textSizeClass}`}
-            >
-              Contraseña:
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                id="login-password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingrese su clave (ej: 123)"
-                className={`w-full pl-12 pr-12 rounded-2xl bg-slate-50 border border-slate-200 font-semibold text-slate-900 focus:border-[#F2D9DC] focus:ring-2 focus:ring-[#F2D9DC]/50 focus:outline-none transition-all ${inputPaddingClass}`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
-                title={showPassword ? 'Ocultar clave' : 'Mostrar clave'}
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Botón Ingresar */}
-          <button
-            type="submit"
-            className="w-full py-4 font-black text-xl rounded-2xl shadow-md cursor-pointer transition-all transform hover:scale-[1.02] active:scale-[0.99] flex items-center justify-center gap-2 text-white"
-            style={{ background: 'linear-gradient(135deg, #1E40AF 0%, #1D4ED8 100%)' }}
-          >
-            <LogIn className="w-6 h-6" />
-            <span>Ingresar al Sistema</span>
-          </button>
-
-        </form>
-
-        {/* Separador */}
-        <div className="relative flex py-1 items-center">
-          <div className="flex-grow border-t border-slate-100"></div>
-          <span className="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-slate-400 bg-white px-2">
-            O para Vecinos
-          </span>
-          <div className="flex-grow border-t border-slate-100"></div>
-        </div>
-
-        {/* Botón de Acceso Comunitario SIN Contraseña */}
-        <div>
+        {/* Botón de Acceso Comunitario */}
+        <div className="pt-2">
           <button
             type="button"
             onClick={handleComunidadAccess}
-            className="w-full py-4 font-black text-lg md:text-xl rounded-2xl shadow-md cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.99] flex items-center justify-center gap-3 text-white"
+            className="w-full py-5 font-black text-xl md:text-2xl rounded-2xl shadow-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.99] flex items-center justify-center gap-3 text-white"
             style={{ background: 'linear-gradient(135deg, #15803D 0%, #16A34A 100%)' }}
           >
-            <Users className="w-6 h-6" />
-            <span>Acceso Vecinos / Comunidad (Sin Clave)</span>
+            <Users className="w-7 h-7" />
+            <span>Acceso Vecinos / Comunidad</span>
           </button>
-          <p className="text-center text-xs text-slate-400 font-medium mt-2">
-            Los vecinos no necesitan contraseña; solo escriben su nombre para consultar el estatus.
+          <p className="text-center text-sm text-slate-500 font-medium mt-3">
+            Consulta el estado de tu bombona, reporta tus pagos y revisa el balance comunal sin complicaciones.
           </p>
-        </div>
-
-        {/* Atajos Rápidos de Prueba para Mamá / Equipo */}
-        <div className="pt-3 border-t border-slate-100 space-y-2">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block text-center">
-            Atajos de Prueba (1 toque):
-          </span>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('cobrador', '123')}
-              className="p-2.5 rounded-2xl border border-[#DBEAFE] bg-[#EFF6FF] hover:bg-[#DBEAFE] text-blue-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              👤 Cobrador
-              <span className="block text-2xs text-blue-500 font-mono mt-0.5">clave: 123</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('verificador', '123')}
-              className="p-2.5 rounded-2xl border border-[#E0E7FF] bg-[#EEF2FF] hover:bg-[#E0E7FF] text-indigo-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              🏦 Verificador
-              <span className="block text-2xs text-indigo-500 font-mono mt-0.5">clave: 123</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin', '123')}
-              className="p-2.5 rounded-2xl border border-[#FDE68A] bg-[#FFFBEB] hover:bg-[#FEF3C7] text-amber-800 font-bold text-xs text-center cursor-pointer transition-colors"
-            >
-              👑 Administrador
-              <span className="block text-2xs text-amber-600 font-mono mt-0.5">clave: 123</span>
-            </button>
-          </div>
         </div>
 
       </div>
