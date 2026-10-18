@@ -5,20 +5,22 @@ import {
   persistentMultipleTabManager,
 } from 'firebase/firestore';
 
-// Las variables de entorno se leen desde .env.local
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'DEMO_KEY',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'gasgestor.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'gasgestor',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'gasgestor.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:123456789:web:abcdef',
+// Credenciales oficiales del proyecto Firebase GasGestor
+export const firebaseConfig = {
+  apiKey: "AIzaSyAHkNfgBvH_jrD11D2pndWtCuTWW8NHoOA",
+  authDomain: "gasgestor.firebaseapp.com",
+  projectId: "gasgestor",
+  storageBucket: "gasgestor.firebasestorage.app",
+  messagingSenderId: "1039878147025",
+  appId: "1:1039878147025:web:c0970bbe8d6d96d007aef0"
 };
 
-// Inicializar Firebase
+// Inicializar la aplicación de Firebase
 export const app = initializeApp(firebaseConfig);
 
 // Inicializar Firestore con soporte OFFLINE nativo multi-pestaña
+// Guarda automáticamente en la memoria del teléfono / navegador cuando no hay internet
+// y sincroniza solo al recuperar señal.
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager(),

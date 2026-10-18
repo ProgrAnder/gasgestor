@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import type { GasRecord, UserRole, FontSizeMode, UserSession } from './types/gas.ts';
 import { SEED_RECORDS } from './utils/gasLogic.ts';
+import {
+  subscribeToGasRecords,
+  saveGasRecordToCloud,
+  deleteGasRecordFromCloud,
+  resetGasRecordsInCloud,
+} from './utils/cloudSync.ts';
 import { Header } from './components/Header.tsx';
 import { LoginScreen } from './components/LoginScreen.tsx';
 import { StatsCards } from './components/StatsCards.tsx';
@@ -9,7 +15,7 @@ import { CollectorView } from './components/CollectorView.tsx';
 import { VerifierView } from './components/VerifierView.tsx';
 import { PrintSheetView } from './components/PrintSheetView.tsx';
 import { MamaGuideView } from './components/MamaGuideView.tsx';
-import { CheckCircle2, AlertCircle, Info, HeartHandshake } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Info, HeartHandshake, Wifi, WifiOff } from 'lucide-react';
 
 export default function App() {
   // Estado de Sesión de Usuario
@@ -25,7 +31,29 @@ export default function App() {
     return null;
   });
 
-  // Registros de Bombonas
+  // Estado de conexión a Internet
+  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      showToast('Conexión reestablecida. Sincronizando con la nube...', 'success');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      showToast('Sin conexión a Internet. Modo fuera de línea activo (los cambios se guardan localmente).', 'info');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Registros de Bombonas (con sincronización en la nube + soporte offline)
   const [records, setRecords] = useState<GasRecord[]>(() => {
     try {
       const saved = localStorage.getItem('gasgestor_records');
@@ -37,6 +65,17 @@ export default function App() {
     }
     return SEED_RECORDS;
   });
+
+  // Suscribirse a Firestore en tiempo real (lee localmente de inmediato y sincroniza en segundo plano)
+  useEffect(() => {
+    const unsubscribe = subscribeToGasRecords((cloudRecords) => {
+      if (cloudRecords && cloudRecords.length > 0) {
+        setRecords(cloudRecords);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Rol activo para visualización
   const [currentRole, setCurrentRole] = useState<UserRole>('comunidad');
@@ -52,7 +91,7 @@ export default function App() {
     type: 'success' | 'error' | 'info';
   } | null>(null);
 
-  // Guardar en localStorage
+  // Guardar en localStorage de respaldo
   useEffect(() => {
     try {
       localStorage.setItem('gasgestor_records', JSON.stringify(records));
@@ -108,7 +147,7 @@ export default function App() {
     showToast('Sesión cerrada correctamente.', 'info');
   };
 
-  const handleAddRecord = (newRecord: Omit<GasRecord, 'id' | 'fechaRegistro'>) => {
+  const handleAddRecord = async (newRecord: Omit<GasRecord, 'id' | 'fechaRegistro'>) => {
     const record: GasRecord = {
       ...newRecord,
       id: 'rec-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
@@ -116,92 +155,112 @@ export default function App() {
     };
     setRecords((prev) => [record, ...prev]);
     showToast(`Registro guardado para ${record.nombre}.`, 'success');
+    try {
+      await saveGasRecordToCloud(record);
+    } catch (e) {
+      console.warn('Guardado en cache offline (se sincronizará al conectar):', e);
+    }
   };
 
-  const handleToggleCheck1 = (id: string) => {
-    setRecords((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          const next = !r.check1_cobrador;
-          showToast(
-            next
-              ? `Datos validados para ${r.nombre}.`
-              : `Validación de datos retirada para ${r.nombre}.`,
-            'info'
-          );
-          return { ...r, check1_cobrador: next };
-        }
-        return r;
-      })
+  const handleToggleCheck1 = async (id: string) => {
+    const target = records.find((r) => r.id === id);
+    if (!target) return;
+    const updated = { ...target, check1_cobrador: !target.check1_cobrador };
+
+    setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    showToast(
+      updated.check1_cobrador
+        ? `Datos validados para ${updated.nombre}.`
+        : `Validación de datos retirada para ${updated.nombre}.`,
+      'info'
     );
+    try {
+      await saveGasRecordToCloud(updated);
+    } catch (e) {
+      console.warn('Actualizado en cache offline:', e);
+    }
   };
 
-  const handleToggleCheck2Manual = (id: string) => {
-    setRecords((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          const next = !r.check2_manual;
-          showToast(
-            next
-              ? `Check Manual aprobado para ${r.nombre}.`
-              : `Check Manual retirado para ${r.nombre}.`,
-            'info'
-          );
-          return { ...r, check2_manual: next };
-        }
-        return r;
-      })
+  const handleToggleCheck2Manual = async (id: string) => {
+    const target = records.find((r) => r.id === id);
+    if (!target) return;
+    const updated = { ...target, check2_manual: !target.check2_manual };
+
+    setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    showToast(
+      updated.check2_manual
+        ? `Check Manual aprobado para ${updated.nombre}.`
+        : `Check Manual retirado para ${updated.nombre}.`,
+      'info'
     );
+    try {
+      await saveGasRecordToCloud(updated);
+    } catch (e) {
+      console.warn('Actualizado en cache offline:', e);
+    }
   };
 
-  const handleToggleCheck2Banco = (id: string) => {
-    setRecords((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          const next = !r.check2_banco;
-          showToast(
-            next
-              ? `Check Banco activado manualmente para ${r.nombre}.`
-              : `Check Banco desactivado para ${r.nombre}.`,
-            'info'
-          );
-          return { ...r, check2_banco: next };
-        }
-        return r;
-      })
+  const handleToggleCheck2Banco = async (id: string) => {
+    const target = records.find((r) => r.id === id);
+    if (!target) return;
+    const updated = { ...target, check2_banco: !target.check2_banco };
+
+    setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    showToast(
+      updated.check2_banco
+        ? `Check Banco activado manualmente para ${updated.nombre}.`
+        : `Check Banco desactivado para ${updated.nombre}.`,
+      'info'
     );
+    try {
+      await saveGasRecordToCloud(updated);
+    } catch (e) {
+      console.warn('Actualizado en cache offline:', e);
+    }
   };
 
-  const handleSetInconveniente = (id: string, tieneInconveniente: boolean, motivo?: string) => {
-    setRecords((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          showToast(
-            tieneInconveniente
-              ? `Inconveniente reportado para ${r.nombre}.`
-              : `Inconveniente resuelto para ${r.nombre}.`,
-            tieneInconveniente ? 'error' : 'success'
-          );
-          return {
-            ...r,
-            tieneInconveniente,
-            motivoInconveniente: tieneInconveniente ? motivo : undefined,
-          };
-        }
-        return r;
-      })
+  const handleSetInconveniente = async (id: string, tieneInconveniente: boolean, motivo?: string) => {
+    const target = records.find((r) => r.id === id);
+    if (!target) return;
+    const updated = {
+      ...target,
+      tieneInconveniente,
+      motivoInconveniente: tieneInconveniente ? motivo : undefined,
+    };
+
+    setRecords((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    showToast(
+      tieneInconveniente
+        ? `Inconveniente reportado para ${updated.nombre}.`
+        : `Inconveniente resuelto para ${updated.nombre}.`,
+      tieneInconveniente ? 'error' : 'success'
     );
+    try {
+      await saveGasRecordToCloud(updated);
+    } catch (e) {
+      console.warn('Actualizado en cache offline:', e);
+    }
   };
 
-  const handleDeleteRecord = (id: string) => {
+  const handleDeleteRecord = async (id: string) => {
     setRecords((prev) => prev.filter((r) => r.id !== id));
     showToast('Registro eliminado.', 'info');
+    try {
+      await deleteGasRecordFromCloud(id);
+    } catch (e) {
+      console.warn('Eliminado en cache offline:', e);
+    }
   };
 
-  const handleResetData = () => {
+  const handleResetData = async () => {
     if (confirm('¿Restablecer la lista con los 5 ejemplos de prueba iniciales (María Páez/María Mario, Pepe Pérez, etc.)?')) {
       setRecords(SEED_RECORDS);
       showToast('Se han restablecido los 5 ejemplos ficticios de prueba.', 'success');
+      try {
+        await resetGasRecordsInCloud();
+      } catch (e) {
+        console.warn('Reset aplicado en cache local:', e);
+      }
     }
   };
 
@@ -263,6 +322,26 @@ export default function App() {
 
       {/* Contenido Principal */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-5 md:py-6">
+
+        {/* Indicador de Estado de Conexión (Offline / Online) */}
+        <div className="flex items-center justify-between mb-3 px-1">
+          <div className="flex items-center gap-2">
+            {isOnline ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Nube Conectada (Sincronizado)</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs animate-pulse">
+                <WifiOff className="w-3.5 h-3.5 text-amber-600" />
+                <span>Modo Sin Conexión (Los datos se guardan en el teléfono)</span>
+              </span>
+            )}
+          </div>
+          <span className="text-2xs text-slate-400 font-medium">
+            Firebase Firestore • Multi-dispositivo
+          </span>
+        </div>
 
         {/* Banner Estadístico Rápido */}
         {currentRole !== 'guia_mama' && (
