@@ -67,9 +67,9 @@ export default function App() {
     return SEED_RECORDS;
   });
 
-  // Nombre de la colección según el rol (colección aislada 'gas_records_mama' para mamá)
-  const isMama = session?.role === 'mama';
-  const collectionName = isMama ? 'gas_records_mama' : 'gas_records';
+  // Nombre de la colección según el rol (colección aislada 'gas_records_sf10' para sf10)
+  const isSf10 = session?.role === 'sf10';
+  const collectionName = isSf10 ? 'gas_records_sf10' : 'gas_records';
 
   // Suscribirse a Firestore en tiempo real (lee localmente de inmediato y sincroniza en segundo plano)
   useEffect(() => {
@@ -129,8 +129,8 @@ export default function App() {
     }
 
     // Configurar la vista correspondiente según el rol
-    if (newSession.role === 'mama') {
-      setCurrentRole('mama');
+    if (newSession.role === 'sf10') {
+      setCurrentRole('sf10');
     } else if (newSession.role === 'cobrador') {
       setCurrentRole('cobrador');
     } else if (newSession.role === 'verificador') {
@@ -141,7 +141,7 @@ export default function App() {
       setCurrentRole('comunidad');
     }
 
-    showToast(`Bienvenida, ${newSession.name}.`, 'success');
+    showToast(`Bienvenido/a, ${newSession.name}.`, 'success');
   };
 
   const handleLogout = () => {
@@ -350,13 +350,13 @@ export default function App() {
           </span>
         </div>
 
-        {/* Banner Estadístico Rápido (Oculto para mamá para no abrumar) */}
-        {!isMama && currentRole !== 'guia_mama' && (
+        {/* Banner Estadístico Rápido (Oculto para sf10 para máxima sencillez) */}
+        {!isSf10 && (
           <StatsCards records={records} fontSize={fontSize} />
         )}
 
-        {/* Vista Ultra Simplificada para Mamá */}
-        {isMama && (
+        {/* Vista Ultra Simplificada para sf10 */}
+        {isSf10 && (
           <MamaSimpleCollector
             records={records}
             onAddRecord={handleAddRecord}
@@ -365,8 +365,8 @@ export default function App() {
           />
         )}
 
-        {/* Vistas según Rol Activo (cuando no es Mamá) */}
-        {!isMama && currentRole === 'comunidad' && (
+        {/* Vistas según Rol Activo (cuando no es sf10) */}
+        {!isSf10 && currentRole === 'comunidad' && (
           <CommunityView
             records={records}
             onAddRecord={handleAddRecord}
@@ -405,15 +405,6 @@ export default function App() {
         {currentRole === 'master' && (
           <PrintSheetView records={records} fontSize={fontSize} />
         )}
-
-        {currentRole === 'guia_mama' && (
-          <MamaGuideView
-            onSelectRole={setCurrentRole}
-            onResetData={handleResetData}
-            fontSize={fontSize}
-          />
-        )}
-
       </main>
 
       {/* Pie de Página — Friendly Design */}

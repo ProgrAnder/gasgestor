@@ -160,8 +160,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Barra de Selección de Vistas / Roles (Oculta para Mamá para máxima sencillez) */}
-        {session.role !== 'mama' && (
+        {/* Barra de Selección de Vistas / Roles (Oculta para sf10 para máxima sencillez) */}
+        {session.role !== 'sf10' && (
           <nav
             className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-start sm:justify-center overflow-x-auto gap-2 pb-1 scrollbar-none"
             aria-label="Selección de modo y rol"
