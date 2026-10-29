@@ -10,6 +10,8 @@ import {
   RotateCcw,
   LogOut,
   User,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -18,6 +20,8 @@ interface HeaderProps {
   onSelectRole: (role: UserRole) => void;
   fontSize: FontSizeMode;
   onChangeFontSize: (size: FontSizeMode) => void;
+  darkMode: boolean;
+  onToggleDarkMode: () => void;
   onResetData: () => void;
   onLogout: () => void;
 }
@@ -28,6 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectRole,
   fontSize,
   onChangeFontSize,
+  darkMode,
+  onToggleDarkMode,
   onResetData,
   onLogout,
 }) => {
@@ -134,6 +140,21 @@ export const Header: React.FC<HeaderProps> = ({
                 A++
               </button>
             </div>
+
+            {/* Botón Dark Mode */}
+            <button
+              type="button"
+              onClick={onToggleDarkMode}
+              title={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+              className="p-2 rounded-2xl border transition-all cursor-pointer flex items-center justify-center hover:scale-105"
+              style={{
+                background: darkMode ? '#334155' : '#FAFAFA',
+                borderColor: darkMode ? '#475569' : '#E5E7EB',
+                color: darkMode ? '#FBBF24' : '#64748B',
+              }}
+            >
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
 
             {/* Reiniciar Ejemplos */}
             <button

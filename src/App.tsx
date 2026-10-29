@@ -90,6 +90,26 @@ export default function App() {
     return (localStorage.getItem('gasgestor_fontsize') as FontSizeMode) || 'normal';
   });
 
+  // Estado de Modo Oscuro (Dark Mode)
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('gasgestor_darkmode') === 'true';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('gasgestor_darkmode', String(darkMode));
+    } catch (e) {
+      console.error('Error saving dark mode preference:', e);
+    }
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+
   // Mensajes Toast temporales
   const [toast, setToast] = useState<{
     message: string;
@@ -278,6 +298,8 @@ export default function App() {
         onLoginSuccess={handleLoginSuccess}
         fontSize={fontSize}
         onChangeFontSize={setFontSize}
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
       />
     );
   }
@@ -293,7 +315,7 @@ export default function App() {
   const isMaster = session.role === 'master';
 
   return (
-    <div className={`min-h-screen bg-[#FDF8F8] flex flex-col ${rootFontClass}`}>
+    <div className={`min-h-screen ${darkMode ? 'bg-slate-900 text-slate-100' : 'bg-[#FDF8F8] text-slate-900'} flex flex-col ${rootFontClass} transition-colors`}>
 
       {/* Toast Notification — Friendly Design */}
       {toast && (
@@ -302,10 +324,10 @@ export default function App() {
             className="p-4 rounded-3xl shadow-xl flex items-center gap-3 border"
             style={
               toast.type === 'success'
-                ? { background: '#F0FDF4', color: '#15803D', borderColor: '#BBF7D0' }
+                ? { background: darkMode ? '#064E3B' : '#F0FDF4', color: darkMode ? '#A7F3D0' : '#15803D', borderColor: darkMode ? '#059669' : '#BBF7D0' }
                 : toast.type === 'error'
-                ? { background: '#FFF1F2', color: '#DC2626', borderColor: '#FECDD3' }
-                : { background: '#EFF6FF', color: '#1D4ED8', borderColor: '#BFDBFE' }
+                ? { background: darkMode ? '#7F1D1D' : '#FFF1F2', color: darkMode ? '#FECDD3' : '#DC2626', borderColor: darkMode ? '#DC2626' : '#FECDD3' }
+                : { background: darkMode ? '#1E3A8A' : '#EFF6FF', color: darkMode ? '#BFDBFE' : '#1D4ED8', borderColor: darkMode ? '#2563EB' : '#BFDBFE' }
             }
           >
             {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 flex-shrink-0" style={{ color: '#16A34A' }} />}
@@ -323,6 +345,8 @@ export default function App() {
         onSelectRole={setCurrentRole}
         fontSize={fontSize}
         onChangeFontSize={setFontSize}
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
         onResetData={handleResetData}
         onLogout={handleLogout}
       />

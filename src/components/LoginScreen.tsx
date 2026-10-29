@@ -13,18 +13,24 @@ import {
   Sparkles,
   HelpCircle,
   CheckCircle2,
+  Moon,
+  Sun,
 } from 'lucide-react';
 
 interface LoginScreenProps {
   onLoginSuccess: (session: UserSession) => void;
   fontSize: FontSizeMode;
   onChangeFontSize: (size: FontSizeMode) => void;
+  darkMode: boolean;
+  onToggleDarkMode: () => void;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLoginSuccess,
   fontSize,
   onChangeFontSize,
+  darkMode,
+  onToggleDarkMode,
 }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -68,9 +74,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-center items-center p-4"
+      className="min-h-screen flex flex-col justify-center items-center p-4 transition-colors"
       style={{
-        background: 'linear-gradient(150deg, #FDF4F5 0%, #F9FDF9 50%, #F4F8FF 100%)',
+        background: darkMode
+          ? 'linear-gradient(150deg, #0F172A 0%, #1E293B 50%, #0B1120 100%)'
+          : 'linear-gradient(150deg, #FDF4F5 0%, #F9FDF9 50%, #F4F8FF 100%)',
       }}
     >
       {/* Controles de accesibilidad superiores */}
@@ -111,6 +119,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             A++ Mayor
           </button>
         </div>
+
+        {/* Botón Dark Mode en Login */}
+        <button
+          type="button"
+          onClick={onToggleDarkMode}
+          title={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          className="p-2 bg-white/80 backdrop-blur-sm rounded-2xl border border-[#F2D9DC] shadow-sm cursor-pointer transition-all hover:scale-105 flex items-center justify-center text-slate-600 dark:text-amber-400"
+        >
+          {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
+        </button>
       </div>
 
       {/* Tarjeta Principal de Inicio de Sesión */}
